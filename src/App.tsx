@@ -7,6 +7,7 @@ import Register from './pages/Register';
 import Profile from './pages/Profile';
 import ProtectedRoute from './components/ProtectedRoute';
 import LoggedOutRoute from './components/LoggedOutRoute';
+import VerifyEmail from './pages/VerifyEmail';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route index element={<Home />} />
           <Route path="login" element={<LoggedOutRoute element={<Login />} forwardRoute="/profile" />} />
           <Route path="register" element={<Register />} />
+          <Route path="verify-email" element={<VerifyEmail />} />
           <Route path="/profile" element={<ProtectedRoute element={<Layout />} forwardPath="/login" />}>
             <Route index element={<Profile />} />
           </Route>

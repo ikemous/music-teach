@@ -16,6 +16,9 @@ export default function ProtectedRoute({ element, forwardPath }:Props) {
         if(currentUser === null) {
             navigate(forwardPath);
         }
+        else if(!currentUser.emailVerified) {
+            navigate("/verify-email");
+        }
         setLoading(false);
     }, []);
 

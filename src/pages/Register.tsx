@@ -10,6 +10,7 @@ import {
 } from "react-bootstrap";
 import { useState } from "react";
 import { useAuth } from "../utils/context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 interface ErrorType {
     emailError: string;
@@ -28,7 +29,8 @@ export default function Register() {
         confirmPassword: "",
         generalError: "",
     });
-    const { register } = useAuth();
+    const { register, verifyEmail } = useAuth();
+    const navigator = useNavigate();
 
     useState(() => {
         const tempError:ErrorType = {
@@ -48,10 +50,18 @@ export default function Register() {
         }
     });
 
-    const handleSubmit = (event:any) => {
+    const handleSubmit = async (event:any) => {
         event.preventDefault();
         console.log("Here")
-        register(email, password);
+        try {
+            const user = await register(email, password);
+            if(user !== null) {
+                navigator("/verify-email");
+            }
+
+        } catch (e) {
+            console.log(e);
+        }
     }
     return(
         <main className="d-flex justify-content-center align-items-center full-screen-height">
