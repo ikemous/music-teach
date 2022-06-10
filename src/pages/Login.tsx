@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Container, Form, FormGroup, Row, Col, Button, FormLabel, FormControl } from "react-bootstrap";
 import { useAuth } from "../utils/context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -8,6 +8,10 @@ export default function Login() {
     const navigate = useNavigate();
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
+
+    useEffect(() => {
+        
+    }, []);
 
     async function handleSubmit(event:any) {
         event.preventDefault();
