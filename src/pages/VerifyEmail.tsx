@@ -16,10 +16,21 @@ export default function VerifyEmail() {
         else if(currentUser.emailVerified) {
             navigate("/profile");
         }
-        verifyEmail();
+        else {
+            runInterval();
+        }
         setLoading(false);
-    }, [currentUser]);
+    }, []);
 
+    function runInterval() {
+        let interval = setInterval(async () => {
+            if (currentUser.emailVerified) {
+                clearInterval(interval);
+                navigate("/profile");
+            }
+           await currentUser.reload();
+        }, 2000);
+    }
     async function sendVerificationEmail() {
         await verifyEmail();
         setVerificationSent(true);

@@ -15,3 +15,33 @@ code {
 .full-screen-height {
   height: 100vh;
 }
+
+.auth-toast {
+  position: absolute;
+  width: 100%!important;
+  bottom: 0;
+}
+
+.account-setup-container {
+  flex-direction: column!important;
+}
+.progress-container {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  padding: 2rem;
+}
+
+.custom-progress-bar {
+  border: solid black;
+  border-radius: 360px;
+  height: 7vh;
+}
+
+.step-one {
+  border-radius: 360px 0px 0px 360px;
+}
+
+.step-two {
+  border-radius: 0px 360px 360px 0px;
+}

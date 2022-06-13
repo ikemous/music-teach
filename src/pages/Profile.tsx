@@ -1,10 +1,9 @@
-import { Col, Container, Row } from "react-bootstrap";
+import { Col, Container, Row, Image } from "react-bootstrap";
 import { useAuth } from "../utils/context/AuthContext";
 
 export default function Profile() {
     const { currentUser } = useAuth();
-    console.log(currentUser);
-
+    
     return (
         <main>
             <Container>
@@ -13,7 +12,10 @@ export default function Profile() {
                         <h1>Proffile Information here</h1>
                     </Col>
                     <Col lg={3}>
-                        <h2>User Card here</h2>
+                        <p className="text-center mb-0">Hello!</p>
+                        <h2 className="text-center">Teacher Name</h2>
+                        <Image src="/images/lilly.jpg" alt="teacher profile image" fluid roundedCircle  />
+                        
                     </Col>
                 </Row>
             </Container>

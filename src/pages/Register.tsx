@@ -6,11 +6,15 @@ import {
     Form, 
     FormGroup, 
     FormLabel, 
-    FormControl 
+    FormControl, 
+    Toast,
+    ToastContainer
 } from "react-bootstrap";
 import { useState } from "react";
 import { useAuth } from "../utils/context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { sendEmailVerification } from "firebase/auth";
+import { FirebaseError } from "firebase/app";
 
 interface ErrorType {
     emailError: string;
@@ -20,47 +24,51 @@ interface ErrorType {
 }
 
 export default function Register() {
+    const { register } = useAuth();
+    const navigator = useNavigate();
+
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [confirmPassword, setConfirmPassword] = useState<string>("");
-    const [errors, setErrors] = useState<ErrorType>({
-        emailError: "",
-        passwordError: "",
-        confirmPassword: "",
-        generalError: "",
-    });
-    const { register, verifyEmail } = useAuth();
-    const navigator = useNavigate();
-
-    useState(() => {
-        const tempError:ErrorType = {
-            emailError: "",
-            confirmPassword: "",
-            generalError: "",
-            passwordError: "",
-        }
-        if(errors.emailError !== "" && email === "") {
-            tempError.emailError = "Email is required";
-        }
-        if(errors.passwordError !== "" && password === "") {
-            tempError.emailError = "Email is required";
-        }
-        if(errors.confirmPassword !== "" && confirmPassword === "") {
-            tempError.emailError = "Email is required";
-        }
-    });
+    const [error, setError] = useState<string>("");
+    const [show, setShow] = useState<boolean>(false);
 
     const handleSubmit = async (event:any) => {
         event.preventDefault();
-        console.log("Here")
+        if(email === "" || password === "" || confirmPassword === "") {
+            setError("All fields are required");
+            return setShow(true);
+        }
+        else if(password !== confirmPassword) {
+            setError("Passwords don't match");
+            return setShow(true);
+        }
         try {
-            const user = await register(email, password);
+            const { user } = await register(email, password);
             if(user !== null) {
+                await sendEmailVerification(user);
                 navigator("/verify-email");
             }
 
         } catch (e) {
-            console.log(e);
+            if(e instanceof FirebaseError) {
+                switch(e.code) {
+                    case "auth/invalid-email":
+                        setError("Invalid Email Address");
+                        setShow(true);
+                        break;
+                    case "auth/email-already-in-use":
+                        setError("Account Already Registered With Email");
+                        setShow(true);
+                        break;
+                    case "auth/weak-password":
+                        setError("Password must be 6 characters minimum");
+                        setShow(true);
+                        break;
+                    default:
+                        console.log(e)
+                }
+            }
         }
     }
     return(
@@ -104,7 +112,18 @@ export default function Register() {
                         </Row>
                     </Container>
                 </Form>
+                <p className="text-center pt-3">Already Registered? <Link to="/login">Login Here</Link></p>
             </Container>
+            <ToastContainer className="p-3" position="bottom-center">
+                <Toast bg="danger" onClose={() => setShow(false)} show={show} delay={4000} autohide>
+                    <Toast.Header closeButton={false}>
+                        <img src="holder.js/20x20?text=%20" className="rounded me-2" alt="" />
+                        <strong className="me-auto">Authentication Error</strong>
+                        <small>:(</small>
+                    </Toast.Header>
+                    <Toast.Body>{error}</Toast.Body>
+                </Toast>
+            </ToastContainer>
         </main>
     );
 }
