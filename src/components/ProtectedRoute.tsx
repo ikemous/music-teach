@@ -19,7 +19,7 @@ export default function ProtectedRoute({ element, forwardPath }:Props) {
         else if(!currentUser.emailVerified) {
             navigate("/verify-email");
         }
-        else if(currentUser.displayName === null) {
+        else if(currentUser.displayName === null || currentUser.photoURL == null) {
             navigate("/account-setup");
         }
         setLoading(false);

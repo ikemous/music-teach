@@ -3,7 +3,7 @@ import { useAuth } from "../utils/context/AuthContext";
 
 export default function Profile() {
     const { currentUser } = useAuth();
-    
+    console.log(currentUser);
     return (
         <main>
             <Container>

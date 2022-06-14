@@ -1,33 +1,60 @@
-import { useState } from "react";
+import { createRef, useEffect, useState } from "react";
 import { Container, Row, Col, Form, FormGroup, FormControl, FormLabel, Button, ToastContainer, Toast, Image } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../utils/context/AuthContext";
 import { v4 as uuidv4 } from 'uuid';
 import userImages from "../utils/imageList";
 import { UserImageData } from "../utils/types";
+import { FirebaseError } from "firebase/app";
 
+const AccountSetupDisplay = () => {
+    const [step, setStep] = useState<number>(1);
+    const [displayName, setDisplayName] = useState<string>("");
+    const [profileImage, setProfileImage] = useState<string>("")
+    const [show, setShow] = useState<boolean>(false);
+    return (
+        <>
+        </>
+    )
+}
 
 const AccountSetup = () => {
-    const { currentUser } = useAuth();
+    const { currentUser, updateUserProfile } = useAuth();
     const navigate = useNavigate();
     const [step, setStep] = useState<number>(1);
     const [displayName, setDisplayName] = useState<string>("");
-    const [phoneNumber, setPhoneNumber] = useState<string>("");
     const [profileImage, setProfileImage] = useState<string>("")
     const [show, setShow] = useState<boolean>(false);
-    const [error, setError] = useState<string>("");
-
+    console.log(currentUser);
     
-    if(currentUser.displayName !== null) {
-        navigate("/profile");
-    }
+    useEffect(() => {
+        if(currentUser.displayName !== null && currentUser.photoURL !== null) {
+            navigate("/profile");
+        }
+    })
     
     function handleSubmit(event:any) {
         event.preventDefault();
-        if(displayName === "" && phoneNumber === "") {
+        if(displayName === "") {
             return setShow(true);
         }
         setStep(2);
+    }
+
+    async function finishSetup() {
+        try {
+            await updateUserProfile(displayName, profileImage);
+            console.log("clicked")
+            navigate("/profile");
+        } catch (e) {
+            console.log(e)
+            if(e instanceof FirebaseError) {
+                switch(e.code) {
+                    default:
+                        console.log(e)
+                }
+            }
+        }
     }
 
     const FirstStep = (
@@ -39,19 +66,11 @@ const AccountSetup = () => {
                     <Row>
                         <Col xs={12} md={{offset: 2, span: 8}} lg={{offset: 3, span: 6}}>
                             <FormGroup className="mb-3" controlId="display-name-input">
-                                <FormLabel>Display Name</FormLabel>
+                                <FormLabel>User Name</FormLabel>
                                 <FormControl 
                                     type="text" 
                                     value={displayName}
                                     onChange={({target}) => setDisplayName(target.value)}
-                                />
-                            </FormGroup>
-                            <FormGroup className="mb-3" controlId="phone-number-input">
-                                <FormLabel>Phone Number</FormLabel>
-                                <FormControl 
-                                    type="text" 
-                                    value={phoneNumber}
-                                    onChange={({target}) => setPhoneNumber(target.value)}
                                 />
                             </FormGroup>
                             <Row>
@@ -80,7 +99,7 @@ const AccountSetup = () => {
 
     const SecondStep = (
         <>
-            <h1 className="text-center">Please Select Profile Image</h1>
+            <h1 className="text-center pt-5">Please Select Profile Image</h1>
             <Container className="icons-container">
                 <Row>
                     <Col xs={12} md={{offset: 2, span: 8}}>
@@ -88,8 +107,16 @@ const AccountSetup = () => {
                             {
                                 userImages.map((userImage:UserImageData) => {
                                     return (
-                                        <Col xs={4} lg={2} key={uuidv4()}>
-                                            <Image src={userImage.path} alt={userImage.altTag} roundedCircle fluid style={{height: "100%", width: "100%"}} />
+                                        <Col xs={4} md={3} lg={2} key={uuidv4()} style={{paddingBottom: ".5rem"}}>
+                                            <Image 
+                                                onClick={() => setProfileImage(userImage.path)}
+                                                src={userImage.path} 
+                                                alt={userImage.altTag} 
+                                                className="icon-item"
+                                                style={ userImage.path === profileImage ? {background: "gold"} : {}}
+                                                roundedCircle 
+                                                fluid  
+                                            />
                                         </Col>
                                     );
                                 })
@@ -104,10 +131,17 @@ const AccountSetup = () => {
                     <Col xs={12} md={{offset: 3, span: 6}}>
                         <Row>
                             <Col>
-                                <Button variant="danger" className="w-100">Back</Button>
+                                <Button variant="danger" className="w-100" onClick={() => setStep(1)}>Back</Button>
                             </Col>
                             <Col>
-                                <Button variant="success" disabled={profileImage === ""} className="w-100">Finish</Button>
+                                <Button 
+                                    variant="success" 
+                                    disabled={profileImage === ""} 
+                                    className="w-100"
+                                    onClick={() => finishSetup()}
+                                >
+                                    Finish
+                                </Button>
                             </Col>
                         </Row>
                     </Col>
@@ -115,6 +149,7 @@ const AccountSetup = () => {
             </Container>
         </>
     );
+
     return (
         <main className="d-flex justify-content-center align-items-center full-screen-height account-setup-container">
             <Container className="progress-container">
@@ -125,7 +160,7 @@ const AccountSetup = () => {
                             className="step-one d-flex" 
                             style={ step === 1 ? { background: "#c2fe9c", fontWeight: "bold" } :{ background: "lawngreen" }}
                         >
-                            <p className="align-self-center mb-0 w-100 text-center">Update Account</p>
+                            <p className="align-self-center mb-0 w-100 text-center">Set Username</p>
                         </Col>
                         <Col 
                             xs={6} 

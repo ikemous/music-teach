@@ -64,7 +64,7 @@ const ForgotPassword = () => {
                         <strong className="me-auto">Authentication Error</strong>
                         <small>:(</small>
                     </Toast.Header>
-                    <Toast.Body>Username or Password invalid</Toast.Body>
+                    <Toast.Body>{error}</Toast.Body>
                 </Toast>
             </ToastContainer>
         </main>

@@ -13,7 +13,7 @@ export default function VerifyEmail() {
         if(currentUser === null) {
             navigate("/login");
         }
-        else if(currentUser.emailVerified) {
+        else if(currentUser.emailVerified && currentUser.photoURL && currentUser.displayName) {
             navigate("/profile");
         }
         else {
@@ -26,7 +26,7 @@ export default function VerifyEmail() {
         let interval = setInterval(async () => {
             if (currentUser.emailVerified) {
                 clearInterval(interval);
-                navigate("/profile");
+                navigate("/account-setup");
             }
            await currentUser.reload();
         }, 2000);
@@ -45,7 +45,7 @@ export default function VerifyEmail() {
                     <Row>
                         <Col className="text-center" xs={12} md={{offset: 2, span: 8}} lg={{offset: 3, span: 6}}>
                             <p>Check your registered email address for the email verification</p>
-                            <p>Haven't recieved the email? Feel free to resend using the button below :)</p>
+                            <p>If you aven't recieved the email feel free to resend using the button below :)</p>
                             <Button 
                                 onClick={sendVerificationEmail} 
                                 disabled={verificationSent}

@@ -35,7 +35,7 @@ code {
 .custom-progress-bar {
   border: solid black;
   border-radius: 360px;
-  height: 7vh;
+  height: 5vh;
 }
 
 .step-one {
@@ -44,4 +44,13 @@ code {
 
 .step-two {
   border-radius: 0px 360px 360px 0px;
+}
+
+.icon-item {
+  height: 100%; 
+  width: 100%;
+  object-fit: fill;
+  border: solid black;
+  background: #a9a9a9;
+  padding: 1rem;
 }

@@ -16,13 +16,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { sendEmailVerification } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
 
-interface ErrorType {
-    emailError: string;
-    passwordError: string;
-    confirmPassword: string;
-    generalError: string;
-}
-
 export default function Register() {
     const { register } = useAuth();
     const navigator = useNavigate();
